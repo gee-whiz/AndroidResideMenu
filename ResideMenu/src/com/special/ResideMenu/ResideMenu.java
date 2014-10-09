@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.*;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
+
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * ????????????/
  * User: special
  * Date: 13-12-10
  * Time: 下午10:44
@@ -100,11 +104,13 @@ public class ResideMenu extends FrameLayout{
         leftMenuItems   = new ArrayList<ResideMenuItem>();
         rightMenuItems  = new ArrayList<ResideMenuItem>();
         ignoredViews    = new ArrayList<View>();
-        viewDecor = (ViewGroup) activity.getWindow().getDecorView();
+        viewDecor = (ViewGroup) activity.getWindow().getDecorView(); 
         viewActivity = new TouchDisableView(this.activity);
 
         View mContent   = viewDecor.getChildAt(0);
         viewDecor.removeViewAt(0);
+        ViewGroup mvs= (ViewGroup)mContent;
+        Log.e("asdfasf", "? = "+(mContent instanceof ViewGroup)+"child s"+ mvs.getChildCount()+" first is text= "+(mvs.getChildAt(0).toString()));
         viewActivity.setContent(mContent);
         addView(viewActivity);
 
@@ -260,7 +266,7 @@ public class ResideMenu extends FrameLayout{
     public void openMenu(int direction){
 
         setScaleDirection(direction);
-
+        scrollViewLeftMenu.setLayoutParams(new LayoutParams( (int) (getScreenWidth()*(1.5 - 1)), LayoutParams.FILL_PARENT));
         isOpened = true;
         AnimatorSet scaleDown_activity = buildScaleDownAnimation(viewActivity, mScaleValue, mScaleValue);
         AnimatorSet scaleDown_shadow = buildScaleDownAnimation(imageViewShadow,
