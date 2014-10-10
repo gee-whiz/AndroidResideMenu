@@ -1,54 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
     <ImageView
-            android:id="@+id/iv_background"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
+        android:id="@+id/iv_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop" />
+
+    <ImageView
+        android:id="@+id/iv_shadow"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/shadow"
+        android:scaleType="fitXY" />
+
+    <RelativeLayout
+        android:id="@+id/lo_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:background="@android:color/darker_gray"
+            android:id="@+id/lo_top"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="1dp"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical" />
 
-    <ImageView
-            android:id="@+id/iv_shadow"
-            android:background="@drawable/shadow"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:scaleType="fitXY"/>
+        <LinearLayout
+            android:background="@android:color/darker_gray"
+            android:id="@+id/lo_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical" />
 
-    <ScrollView
+        <ScrollView
             android:id="@+id/sv_left_menu"
-            android:scrollbars="none"
-            android:paddingLeft="30dp"
-            android:layout_width="150dp"
-            android:layout_height="fill_parent">
-        <LinearLayout
-                android:id="@+id/layout_left_menu"
-                android:orientation="vertical"
-                android:layout_gravity="center_vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-        </LinearLayout>
-    </ScrollView>
-
-    <ScrollView
-            android:id="@+id/sv_right_menu"
-            android:scrollbars="none"
-            android:paddingRight="30dp"
             android:layout_width="150dp"
             android:layout_height="fill_parent"
-            android:layout_gravity="right">
-        <LinearLayout
-                android:id="@+id/layout_right_menu"
-                android:orientation="vertical"
+            android:layout_above="@id/lo_bottom"
+            android:layout_below="@id/lo_top"
+            android:alpha="0"
+            android:background="@android:color/white"
+            android:paddingLeft="30dp"
+            android:scrollbars="none" >
+
+            <LinearLayout
+                android:id="@+id/layout_left_menu"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:layout_gravity="center_vertical"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </ScrollView>
+
+        <ScrollView
+            android:id="@+id/sv_right_menu"
+            android:layout_width="150dp"
+            android:layout_height="fill_parent"
+            android:layout_above="@id/lo_bottom"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/lo_top"
+            android:alpha="0"
+            android:background="@android:color/white"
+            android:paddingRight="30dp"
+            android:scrollbars="none" >
+
+            <LinearLayout
+                android:id="@+id/layout_right_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="right">
-
-        </LinearLayout>
-    </ScrollView>
+                android:layout_gravity="center_vertical"
+                android:gravity="right"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
 
 </FrameLayout>

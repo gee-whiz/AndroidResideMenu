@@ -1,26 +1,31 @@
 package com.special.ResideMenu;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.*;
+import android.view.GestureDetector;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * ????????????/
@@ -28,7 +33,7 @@ import java.util.List;
  * Date: 13-12-10
  * Time: 下午10:44
  * Mail: specialcyci@gmail.com
- */
+ */ 
 public class ResideMenu extends FrameLayout{
 
     public  static final int DIRECTION_LEFT  = 0;
@@ -40,6 +45,10 @@ public class ResideMenu extends FrameLayout{
 
     private ImageView imageViewShadow;
     private ImageView imageViewBackground;
+    private RelativeLayout layoutMenu;
+    private LinearLayout layoutTop;
+    private LinearLayout layoutBottom;
+    
     private LinearLayout layoutLeftMenu;
     private LinearLayout layoutRightMenu;
     private ScrollView scrollViewLeftMenu;
@@ -76,12 +85,17 @@ public class ResideMenu extends FrameLayout{
     }
 
     private void initViews(Context context){
+    	activity = (Activity) context;
         LayoutInflater inflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.residemenu, this);
-        scrollViewLeftMenu = (ScrollView) findViewById(R.id.sv_left_menu);
+        layoutTop = (LinearLayout) findViewById(R.id.lo_top);
+        layoutBottom = (LinearLayout) findViewById(R.id.lo_bottom);
+        
+        scrollViewLeftMenu = (ScrollView) findViewById(R.id.sv_left_menu); 
         scrollViewRightMenu = (ScrollView) findViewById(R.id.sv_right_menu);
         imageViewShadow = (ImageView) findViewById(R.id.iv_shadow);
+        layoutMenu = (RelativeLayout) findViewById(R.id.lo_menu);
         layoutLeftMenu = (LinearLayout) findViewById(R.id.layout_left_menu);
         layoutRightMenu = (LinearLayout) findViewById(R.id.layout_right_menu);
         imageViewBackground = (ImageView) findViewById(R.id.iv_background);
@@ -97,6 +111,22 @@ public class ResideMenu extends FrameLayout{
         setShadowAdjustScaleXByOrientation();
         viewDecor.addView(this, 0);
         setViewPadding();
+        post(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				  int[] location = new int[2];
+				  viewActivity.getLocationOnScreen(location);
+				    int x = location[0];
+				    int y = location[1];
+				Log.e("getHeight()-", x+" "+getStatusBarHeight(ResideMenu.this.activity));
+//				RelativeLayout.LayoutParams layoutParams = (android.widget.RelativeLayout.LayoutParams)layoutTop.getLayoutParams();
+//				layoutParams.setMargins(0, getStatusBarHeight(ResideMenu.this.activity), 0, 0);
+				layoutTop.setPadding(0, getStatusBarHeight(ResideMenu.this.activity), 0, 0);
+				layoutTop.invalidate();
+			}
+		});
     }
 
     private void initValue(Activity activity){
@@ -114,9 +144,10 @@ public class ResideMenu extends FrameLayout{
         viewActivity.setContent(mContent);
         addView(viewActivity);
 
-        ViewGroup parent = (ViewGroup) scrollViewLeftMenu.getParent();
-        parent.removeView(scrollViewLeftMenu);
-        parent.removeView(scrollViewRightMenu);
+        ViewGroup parent = (ViewGroup) layoutMenu.getParent();
+        parent.removeView(layoutMenu);
+//        parent.removeView(scrollViewLeftMenu);
+//        parent.removeView(scrollViewRightMenu);
     }
 
     private void setShadowAdjustScaleXByOrientation(){
@@ -266,7 +297,7 @@ public class ResideMenu extends FrameLayout{
     public void openMenu(int direction){
 
         setScaleDirection(direction);
-        scrollViewLeftMenu.setLayoutParams(new LayoutParams( (int) (getScreenWidth()*(1.5 - 1)), LayoutParams.FILL_PARENT));
+//        scrollViewLeftMenu.setLayoutParams(new LayoutParams( (int) (getScreenWidth()*(1.25 - 1)), LayoutParams.FILL_PARENT));
         isOpened = true;
         AnimatorSet scaleDown_activity = buildScaleDownAnimation(viewActivity, mScaleValue, mScaleValue);
         AnimatorSet scaleDown_shadow = buildScaleDownAnimation(imageViewShadow,
@@ -533,11 +564,22 @@ public class ResideMenu extends FrameLayout{
                         showScrollViewMenu();
 
                     float targetScale = getTargetScale(ev.getRawX());
+                    int actCurrentWidth = (int) (getWidth()*targetScale);
+                    int actCurrentHeight = (int) (getHeight()*targetScale);
                     ViewHelper.setScaleX(viewActivity, targetScale);
                     ViewHelper.setScaleY(viewActivity, targetScale);
                     ViewHelper.setScaleX(imageViewShadow, targetScale + shadowAdjustScaleX);
                     ViewHelper.setScaleY(imageViewShadow, targetScale + shadowAdjustScaleY);
                     ViewHelper.setAlpha(scrollViewMenu, (1 - targetScale) * 2.0f);
+//                    ViewHelper.setTranslationX(scrollViewMenu, -((targetScale)*scrollViewMenu.getWidth()));
+	                Log.e("..", targetScale+"");
+                    //����topMenu �ı�߶�
+                    android.view.ViewGroup.LayoutParams layoutParams = layoutTop.getLayoutParams();
+                    layoutParams.height = (getHeight()-actCurrentHeight)/2;
+                    android.view.ViewGroup.LayoutParams layoutParamsb = layoutBottom.getLayoutParams();
+                    layoutParamsb.height = (getHeight()-actCurrentHeight)/2;
+                    layoutBottom.setLayoutParams(layoutParamsb);
+                    
 
                     lastRawX = ev.getRawX();
                     return true;
@@ -584,6 +626,13 @@ public class ResideMenu extends FrameLayout{
     public void setScaleValue(float scaleValue) {
         this.mScaleValue = scaleValue;
     }
+    /**
+     * 
+     * @param v View if you want
+     */
+    public void setTopMenu(View v ){
+    	layoutTop.addView(v);
+    }
 
     public interface OnMenuListener{
 
@@ -599,14 +648,30 @@ public class ResideMenu extends FrameLayout{
     }
 
     private void showScrollViewMenu(){
-        if (scrollViewMenu != null && scrollViewMenu.getParent() == null){
-            addView(scrollViewMenu);
+        if (layoutMenu != null && layoutMenu.getParent() == null){
+            addView(layoutMenu);
         }
     }
 
     private void hideScrollViewMenu(){
-        if (scrollViewMenu != null && scrollViewMenu.getParent() != null){
-            removeView(scrollViewMenu);
+        if (layoutMenu != null && layoutMenu.getParent() != null){
+            removeView(layoutMenu);
         }
+    }
+    public static int getStatusBarHeight(Context context){
+        Class<?> c = null;
+        Object obj = null;
+        Field field = null;
+        int x = 0, statusBarHeight = 0;
+        try {
+            c = Class.forName("com.android.internal.R$dimen");
+            obj = c.newInstance();
+            field = c.getField("status_bar_height");
+            x = Integer.parseInt(field.get(obj).toString());
+            statusBarHeight = context.getResources().getDimensionPixelSize(x);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        return statusBarHeight;
     }
 }
